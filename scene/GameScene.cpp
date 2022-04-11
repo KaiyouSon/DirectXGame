@@ -1,15 +1,13 @@
 ﻿#include "GameScene.h"
 #include "TextureManager.h"
+#include "Vec3.h"
 #include <cassert>
 
 using namespace DirectX;
 
 GameScene::GameScene() {}
 
-GameScene::~GameScene() {
-	delete sprite_;
-	delete model_;
-}
+GameScene::~GameScene() { delete model; }
 
 void GameScene::Initialize() {
 
@@ -19,39 +17,35 @@ void GameScene::Initialize() {
 	debugText_ = DebugText::GetInstance();
 
 	textureHandle = TextureManager::Load("mario.jpg");
-	sprite_ = Sprite::Create(textureHandle, {100, 50});
-	model_ = Model::Create();
-	soundDataHandle_ = audio_->LoadWave("se_sad03.wav");
-	voiceHandle_ = audio_->PlayWave(soundDataHandle_, true);
-
+	model = Model::Create();
 	// ワールドトランスフォームの初期化
-	worldTransform_.Initialize();
+	worldTransform.Initialize();
 	// ビュープロジェクションの初期化
-	viewProjection_.Initialize();
+	viewProjection.Initialize();
 }
 
+Vec3 pos = {10, 10, 10};
+Vec3 angle = {XM_PI / 4, XM_PI / 4, 0};
+Vec3 scale = {5, 5, 5};
+
 void GameScene::Update() {
-	// スプライトの今の座標を取得
-	XMFLOAT2 position = sprite_->GetPosition();
-	// 座標を{ 2, 0 }移動
-	position.x += 2.0f;
-	position.y += 1.0f;
-	// 移動した座標をスプライトに反映
-	sprite_->SetPosition(position);
 
-	if (input_->TriggerKey(DIK_SPACE)) {
-		// 音声停止
-		audio_->StopWave(voiceHandle_);
-	}
+	// X, Y, Z 軸周りの平行移動を設定
+	worldTransform.translation_ = {pos.x, pos.y, pos.z};
+	// X, Y, Z 軸周りの回転角を設定
+	worldTransform.rotation_ = {angle.x, angle.y, angle.z};
+	// X, Y, Z 方向のスケーリングを設定
+	worldTransform.scale_ = {scale.x, scale.y, scale.z};
 
-	worldTransform_.translation_ = {0, 0, 10};
-	worldTransform_.UpdateMatrix();
+	worldTransform.UpdateMatrix();
 
 	// 変数の値をインクリメント
-	value_++;
-
 	debugText_->SetPos(50, 50);
-	debugText_->Printf("Value:%d", value_);
+	debugText_->Printf("translation:(%f,%f,%f)", pos.x, pos.y, pos.z);
+	debugText_->SetPos(50, 70);
+	debugText_->Printf("rotation:(%f,%f,%f)", angle.x, angle.y, angle.z);
+	debugText_->SetPos(50, 90);
+	debugText_->Printf("scale:(%f,%f,%f)", scale.x, scale.y, scale.z);
 }
 
 void GameScene::Draw() {
@@ -81,7 +75,7 @@ void GameScene::Draw() {
 	/// ここに3Dオブジェクトの描画処理を追加できる
 	/// </summary>
 
-	model_->Draw(worldTransform_, viewProjection_, textureHandle);
+	model->Draw(worldTransform, viewProjection, textureHandle);
 
 	// 3Dオブジェクト描画後処理
 	Model::PostDraw();
@@ -94,8 +88,6 @@ void GameScene::Draw() {
 	/// <summary>
 	/// ここに前景スプライトの描画処理を追加できる
 	/// </summary>
-
-	sprite_->Draw();
 
 	// デバッグテキストの描画
 	debugText_->DrawAll(commandList);

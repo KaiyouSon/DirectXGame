@@ -151,9 +151,11 @@ uint32_t TextureManager::LoadInternal(const std::string& fileName) {
 
 	// シェーダリソースビュー作成
 	texture.cpuDescHandleSRV = CD3DX12_CPU_DESCRIPTOR_HANDLE(
-	  descriptorHeap_->GetCPUDescriptorHandleForHeapStart(), handle, sDescriptorHandleIncrementSize_);
+	  descriptorHeap_->GetCPUDescriptorHandleForHeapStart(), handle,
+	  sDescriptorHandleIncrementSize_);
 	texture.gpuDescHandleSRV = CD3DX12_GPU_DESCRIPTOR_HANDLE(
-	  descriptorHeap_->GetGPUDescriptorHandleForHeapStart(), handle, sDescriptorHandleIncrementSize_);
+	  descriptorHeap_->GetGPUDescriptorHandleForHeapStart(), handle,
+	  sDescriptorHandleIncrementSize_);
 
 	D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc{}; // 設定構造体
 	D3D12_RESOURCE_DESC resDesc = texture.resource->GetDesc();
