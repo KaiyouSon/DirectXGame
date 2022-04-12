@@ -53,13 +53,13 @@ void GameScene::Initialize() {
 void GameScene::Update() {
 
 	// 変数の値をインクリメント
-	//debugText_->SetPos(50, 220);
-	//debugText_->Printf(
+	// debugText_->SetPos(50, 220);
+	// debugText_->Printf(
 	//  "translation:(%f,%f,%f)", worldTransform[12].translation_.x,
 	//  worldTransform[12].translation_.y, worldTransform[12].translation_.z);
 
-	//debugText_->SetPos(50, 200);
-	//debugText_->Printf("tmp%d", _countof(worldTransform) / 2);
+	// debugText_->SetPos(50, 200);
+	// debugText_->Printf("tmp%d", _countof(worldTransform) / 2);
 }
 
 void GameScene::Draw() {
