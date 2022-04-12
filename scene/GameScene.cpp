@@ -27,7 +27,7 @@ void GameScene::Initialize() {
 	std::uniform_real_distribution<float> rotDist(0.0f, XM_PI);
 	// 乱数範囲（座標用）
 	std::uniform_real_distribution<float> posDist(-10.0f, 10.0f);
-
+	
 	for (size_t i = 0; i < _countof(worldTransform); i++) {
 
 		// X, Y, Z 軸周りの平行移動を設定
