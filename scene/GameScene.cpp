@@ -18,7 +18,7 @@ void GameScene::Initialize() {
 
 	textureHandle = TextureManager::Load("mario.jpg");
 	model = Model::Create();
-
+	
 	// 乱数シード生成器
 	std::random_device seed_gen;
 	// メルセンヌ・ツイスター
