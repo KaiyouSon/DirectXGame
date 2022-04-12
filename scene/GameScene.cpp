@@ -21,7 +21,7 @@ void GameScene::Initialize() {
 
 	// 乱数シード生成器
 	std::random_device seed_gen;
-	// メルセンヌ・ツイスター
+	// メルセンヌ・ツイスターab
 	std::mt19937_64 engine(seed_gen());
 	// 乱数範囲（回転角用）
 	std::uniform_real_distribution<float> rotDist(0.0f, XM_PI);
