@@ -23,6 +23,7 @@ void GameScene::Initialize() {
 
 	for (size_t i = 0; i < halfWorldTranform; i++) {
 
+
 		// X, Y, Z 軸周りの平行移動を設定
 		worldTransform[i].translation_ = {-45 + (float)i * 10, 20, 0};
 		// X, Y, Z 軸周りの回転角を設定
