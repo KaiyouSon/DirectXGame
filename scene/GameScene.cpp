@@ -44,8 +44,8 @@ void GameScene::Update() {
 	//  "translation:(%f,%f,%f)", worldTransform[12].translation_.x,
 	//  worldTransform[12].translation_.y, worldTransform[12].translation_.z);
 
-	//debugText_->SetPos(50, 200);
-	//debugText_->Printf("tmp%d", _countof(worldTransform));
+	// debugText_->SetPos(50, 200);
+	// debugText_->Printf("tmp%d", _countof(worldTransform));
 }
 
 void GameScene::Draw() {
