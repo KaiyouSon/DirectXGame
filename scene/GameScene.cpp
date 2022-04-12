@@ -1,6 +1,5 @@
 ﻿#include "GameScene.h"
 #include "TextureManager.h"
-#include "Vec3.h"
 #include <cassert>
 
 using namespace DirectX;
@@ -18,34 +17,49 @@ void GameScene::Initialize() {
 
 	textureHandle = TextureManager::Load("mario.jpg");
 	model = Model::Create();
-	// ワールドトランスフォームの初期化
-	worldTransform.Initialize();
+
+	int maxWorldTranform = _countof(worldTransform);
+	int halfWorldTranform = _countof(worldTransform) / 2;
+
+	for (size_t i = 0; i < halfWorldTranform; i++) {
+
+		// X, Y, Z 軸周りの平行移動を設定
+		worldTransform[i].translation_ = {-45 + (float)i * 10, 20, 0};
+		// X, Y, Z 軸周りの回転角を設定
+		worldTransform[i].rotation_ = {0, 0, 0};
+		// X, Y, Z 方向のスケーリングを設定
+		worldTransform[i].scale_ = {5, 5, 5};
+
+		// ワールドトランスフォームの初期化
+		worldTransform[i].Initialize();
+	}
+	for (size_t i = halfWorldTranform; i < maxWorldTranform; i++) {
+
+		// X, Y, Z 軸周りの平行移動を設定
+		worldTransform[i].translation_ = {-45 + ((float)i - halfWorldTranform) * 10, -20, 0};
+		// X, Y, Z 軸周りの回転角を設定
+		worldTransform[i].rotation_ = {0, 0, 0};
+		// X, Y, Z 方向のスケーリングを設定
+		worldTransform[i].scale_ = {5, 5, 5};
+
+		// ワールドトランスフォームの初期化
+		worldTransform[i].Initialize();
+	}
+
 	// ビュープロジェクションの初期化
 	viewProjection.Initialize();
 }
 
-Vec3 pos = {10, 10, 10};
-Vec3 angle = {XM_PI / 4, XM_PI / 4, 0};
-Vec3 scale = {5, 5, 5};
-
 void GameScene::Update() {
 
-	// X, Y, Z 軸周りの平行移動を設定
-	worldTransform.translation_ = {pos.x, pos.y, pos.z};
-	// X, Y, Z 軸周りの回転角を設定
-	worldTransform.rotation_ = {angle.x, angle.y, angle.z};
-	// X, Y, Z 方向のスケーリングを設定
-	worldTransform.scale_ = {scale.x, scale.y, scale.z};
-
-	worldTransform.UpdateMatrix();
-
 	// 変数の値をインクリメント
-	debugText_->SetPos(50, 50);
-	debugText_->Printf("translation:(%f,%f,%f)", pos.x, pos.y, pos.z);
-	debugText_->SetPos(50, 70);
-	debugText_->Printf("rotation:(%f,%f,%f)", angle.x, angle.y, angle.z);
-	debugText_->SetPos(50, 90);
-	debugText_->Printf("scale:(%f,%f,%f)", scale.x, scale.y, scale.z);
+	//debugText_->SetPos(50, 220);
+	//debugText_->Printf(
+	//  "translation:(%f,%f,%f)", worldTransform[12].translation_.x,
+	//  worldTransform[12].translation_.y, worldTransform[12].translation_.z);
+
+	//debugText_->SetPos(50, 200);
+	//debugText_->Printf("tmp%d", _countof(worldTransform) / 2);
 }
 
 void GameScene::Draw() {
@@ -75,7 +89,9 @@ void GameScene::Draw() {
 	/// ここに3Dオブジェクトの描画処理を追加できる
 	/// </summary>
 
-	model->Draw(worldTransform, viewProjection, textureHandle);
+	for (size_t i = 0; i < _countof(worldTransform); i++) {
+		model->Draw(worldTransform[i], viewProjection, textureHandle);
+	}
 
 	// 3Dオブジェクト描画後処理
 	Model::PostDraw();
