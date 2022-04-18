@@ -57,11 +57,11 @@ class GameScene {
 	Model* model = nullptr;
 
 	// ワールドトランスフォーム
-	WorldTransform worldTransform;
+	WorldTransform worldTransform[3];
 	// ビュープロジェクション
 	ViewProjection viewProjection;
 
-	Vec3 viewPos = {10.0f, 0.0f, 10.0f};
-	Vec3 viewVec;
-	float angle = 1;
+	Vec3 viewPos = {0.0f, 0.0f, -25.0f};
+
+	int objNum = 0;
 };

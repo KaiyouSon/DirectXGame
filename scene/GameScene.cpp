@@ -19,24 +19,21 @@ void GameScene::Initialize() {
 	textureHandle = TextureManager::Load("mario.jpg");
 	model = Model::Create();
 
-	//// 乱数シード生成器a
-	// std::random_device seed_gen;
-	//// メルセンヌ・ツイスター
-	// std::mt19937_64 engine(seed_gen());
-	//// 乱数範囲（座標用）
-	// std::uniform_real_distribution<float> posDist(-10.0f, 10.0f);
-
+	worldTransform[0].translation_ = {0.0f, 5.0f, 0.0f};
+	worldTransform[1].translation_ = {cos(XMConvertToRadians(225)) * 6.0f, -2.5f, 0.0f};
+	worldTransform[2].translation_ = {cos(XMConvertToRadians(315)) * 6.0f, -2.5f, 0.0f};
 	// X, Y, Z 軸周りの平行移動を設定
-	worldTransform.translation_ = {0.0f, 0.0f, 0.0f};
+	for (size_t i = 0; i < _countof(worldTransform); i++) {
 
-	// X, Y, Z 軸周りの回転角を設定
-	worldTransform.rotation_ = {0.0f, 0.0f, 0.0f};
+		// X, Y, Z 軸周りの回転角を設定
+		worldTransform[i].rotation_ = {0.0f, 0.0f, 0.0f};
 
-	// X, Y, Z 方向のスケーリングを設定
-	worldTransform.scale_ = {1.0f, 1.0f, 1.0f};
+		// X, Y, Z 方向のスケーリングを設定
+		worldTransform[i].scale_ = {1.0f, 1.0f, 1.0f};
 
-	// ワールドトランスフォームの初期化
-	worldTransform.Initialize();
+		// ワールドトランスフォームの初期化
+		worldTransform[i].Initialize();
+	}
 
 	// カメラ視点座標を設定
 	viewProjection.eye = {viewPos.x, viewPos.y, viewPos.z};
@@ -49,18 +46,35 @@ void GameScene::Initialize() {
 
 	// ビュープロジェクションの初期化
 	viewProjection.Initialize();
-
-	viewVec = {XMConvertToRadians(angle), 0.0f, XMConvertToRadians(angle)};
 }
 
 void GameScene::Update() {
 
-	viewProjection.eye = {viewPos.x, viewPos.y, viewPos.z};
-	viewVec = {cos(XMConvertToRadians(angle)), 0.0f, sin(XMConvertToRadians(angle))};
-	viewPos = (viewVec * 10);
-	angle++;
-	if (angle > 360)
-		angle = 0;
+	switch (objNum) {
+	case 0:
+		viewProjection.target = {
+		  worldTransform[0].translation_.x, worldTransform[0].translation_.y,
+		  worldTransform[0].translation_.z};
+		if (input_->TriggerKey(DIK_SPACE))
+			objNum = 1;
+		break;
+	case 1:
+		viewProjection.target = {
+		  worldTransform[1].translation_.x, worldTransform[1].translation_.y,
+		  worldTransform[1].translation_.z};
+		if (input_->TriggerKey(DIK_SPACE))
+			objNum = 2;
+		break;
+	case 2:
+		viewProjection.target = {
+		  worldTransform[2].translation_.x, worldTransform[2].translation_.y,
+		  worldTransform[2].translation_.z};
+		if (input_->TriggerKey(DIK_SPACE))
+			objNum = 0;
+		break;
+	default:
+		break;
+	}
 
 	viewProjection.UpdateMatrix();
 
@@ -109,7 +123,10 @@ void GameScene::Draw() {
 	/// ここに3Dオブジェクトの描画処理を追加できる
 	/// </summary>
 
-	model->Draw(worldTransform, viewProjection, textureHandle);
+	for (size_t i = 0; i < _countof(worldTransform); i++) {
+
+		model->Draw(worldTransform[i], viewProjection, textureHandle);
+	}
 
 	// 3Dオブジェクト描画後処理
 	Model::PostDraw();
