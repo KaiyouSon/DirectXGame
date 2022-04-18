@@ -58,8 +58,5 @@ class GameScene {
 	// ワールドトランスフォーム
 	WorldTransform worldTransform;
 	// ビュープロジェクション
-	ViewProjection viewProjection[3];
-
-	// カメラのナンバー
-	int viewNum = 0;
+	ViewProjection viewProjection;
 };
