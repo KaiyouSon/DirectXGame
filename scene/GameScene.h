@@ -7,10 +7,10 @@
 #include "Model.h"
 #include "SafeDelete.h"
 #include "Sprite.h"
+#include "Vec3.h"
 #include "ViewProjection.h"
 #include "WorldTransform.h"
 #include <DirectXMath.h>
-#include "Vec3.h"
 
 /// <summary>
 /// ゲームシーン
@@ -58,6 +58,7 @@ class GameScene {
 
 	// ワールドトランスフォーム
 	WorldTransform worldTransform;
+	WorldTransform worldTransform2[10];
 	// ビュープロジェクション
 	ViewProjection viewProjection;
 
