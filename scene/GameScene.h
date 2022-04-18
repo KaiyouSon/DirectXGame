@@ -10,6 +10,7 @@
 #include "ViewProjection.h"
 #include "WorldTransform.h"
 #include <DirectXMath.h>
+#include "Vec3.h"
 
 /// <summary>
 /// ゲームシーン
@@ -59,4 +60,9 @@ class GameScene {
 	WorldTransform worldTransform;
 	// ビュープロジェクション
 	ViewProjection viewProjection;
+
+	Vec3 objPos;
+	Vec3 objSpeed;
+	Vec3 objVec;
+	float angle;
 };

@@ -32,7 +32,7 @@ void GameScene::Initialize() {
 	worldTransform.Initialize();
 
 	// カメラ視点座標を設定
-	viewProjection.eye = {0.0f, 10.0f, 0.0f};
+	viewProjection.eye = {0.0f, 0.0f, -10.0f};
 
 	// カメラの注視点座標を設定
 	viewProjection.target = {0.0f, 0.0f, 0.0f};
@@ -42,11 +42,46 @@ void GameScene::Initialize() {
 
 	// ビュープロジェクションの初期化
 	viewProjection.Initialize();
+
+	objPos = {0.0f, 0.0f, 0.0f};
+	objVec = {0.0f, 0.0f, 1.0f};
+	objSpeed = {0.1f, 0.1f, 0.1f};
+	angle = 0.0f;
 }
 
 void GameScene::Update() {
 
 	// デバッグ用表示
+
+	worldTransform.translation_ = {objPos.x, objPos.y, objPos.z};
+	worldTransform.rotation_ = {0.0f, XMConvertToRadians(angle), 0.0f};
+
+	if (input_->PushKey(DIK_UP)) {
+
+		objPos += objVec * objSpeed;
+	}
+	if (input_->PushKey(DIK_DOWN)) {
+
+		objPos -= objVec * objSpeed;
+	}
+	if (input_->PushKey(DIK_LEFT)) {
+		angle -= 2;
+		if (angle < 0)
+			angle = 360;
+	}
+	if (input_->PushKey(DIK_RIGHT)) {
+		angle += 2;
+		if (angle > 360)
+			angle = 0;
+	}
+
+	objVec = {sin(XMConvertToRadians(angle)), 0.0f, cos(XMConvertToRadians(angle))};
+
+	worldTransform.UpdateMatrix();
+
+	viewProjection.eye = {0.0f, 10.0f, 0.0f};
+
+	viewProjection.UpdateMatrix();
 
 	// カメラ視点座標
 	debugText_->SetPos(50, 50);
