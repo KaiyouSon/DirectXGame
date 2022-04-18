@@ -58,12 +58,10 @@ class GameScene {
 
 	// ワールドトランスフォーム
 	WorldTransform worldTransform;
-	WorldTransform worldTransform2[10];
 	// ビュープロジェクション
 	ViewProjection viewProjection;
 
-	Vec3 objPos;
-	Vec3 objSpeed;
-	Vec3 objVec;
-	float angle;
+	Vec3 viewPos = {10.0f, 0.0f, 10.0f};
+	Vec3 viewVec;
+	float angle = 1;
 };
