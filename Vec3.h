@@ -3,9 +3,34 @@ class Vec3 {
   public:
 	float x, y, z;
 
-  public:
+	// static変数
+	const static Vec3 left;    // Vec3(-1,0,0) と同じ意味
+	const static Vec3 right;   // Vec3(1,0,0) と同じ意味
+	const static Vec3 up;      // Vec3(0,1,0) と同じ意味
+	const static Vec3 down;    // Vec3(0,-1,0) と同じ意味
+	const static Vec3 forward; // Vec3(0,0,1) と同じ意味
+	const static Vec3 back;    // Vec3(0,0,-1)と同じ意味
+	const static Vec3 one;     // Vec3(1,1,1) と同じ意味
+	const static Vec3 zero;    // Vec3(0,0,0) と同じ意味
+
+	// コンストラクタ
 	Vec3() : x(0), y(0), z(0){};
 	Vec3(float x, float y, float z) : x(x), y(y), z(z){};
+
+	// 関数
+	float Magnitude() const;    // ベクトルの大きさ
+	float SqrMagnitude() const; // ベクトルの大きさの二乗
+	Vec3 Normalized() const;    // 正規化にしたベクトル
+
+	// static関数
+	static float Dot(const Vec3& v1, const Vec3& v2);      // 二つのベクトルの内積
+	static Vec3 Cross(const Vec3& v1, const Vec3& v2);     // 二つのベクトルの外積
+	static float Distance(const Vec3& v1, const Vec3& v2); // 二つのベクトルの距離
+
+	// 二つのベクトルで各成分の一番大きな値を使用してベクトルを作成する
+	static Vec3 Max(const Vec3& v1, const Vec3& v2);
+	// 二つのベクトルで各成分の一番小さな値を使用してベクトルを作成する
+	static Vec3 Min(const Vec3& v1, const Vec3& v2);
 
 	// 算術演算子のオーバーロード
 	Vec3 operator+(const Vec3& other) const; // もう一方のベクトルとの足し算
