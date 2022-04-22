@@ -1,9 +1,11 @@
 ﻿#include "GameScene.h"
+#include "Easeing.h"
 #include "TextureManager.h"
 #include <cassert>
 #include <random>
 
 using namespace DirectX;
+Easeing easeing;
 
 GameScene::GameScene() {}
 
@@ -36,10 +38,10 @@ void GameScene::Initialize() {
 	}
 
 	// カメラ視点座標を設定
-	viewProjection.eye = {viewPos.x, viewPos.y, viewPos.z};
+	viewProjection.eye = {0.0f, 0.0f, -25.0f};
 
 	// カメラの注視点座標を設定
-	viewProjection.target = {0.0f, 0.0f, 0.0f};
+	viewProjection.target = {viewTargetPos.x, viewTargetPos.y, viewTargetPos.z};
 
 	// カメラ上方向ベクトルを設定
 	viewProjection.up = {0.0f, 1.0f, 0.0f};
@@ -52,30 +54,60 @@ void GameScene::Update() {
 
 	switch (objNum) {
 	case 0:
-		viewProjection.target = {
-		  worldTransform[0].translation_.x, worldTransform[0].translation_.y,
-		  worldTransform[0].translation_.z};
-		if (input_->TriggerKey(DIK_SPACE))
+		if (easeTimer <= 60)
+			easeTimer++;
+
+		viewTargetPos.x = easeing.Out(
+		  easeTimer, 60, worldTransform[2].translation_.x, worldTransform[0].translation_.x, 5);
+
+		viewTargetPos.y = easeing.Out(
+		  easeTimer, 60, worldTransform[2].translation_.y, worldTransform[0].translation_.y, 5);
+
+		if (input_->TriggerKey(DIK_SPACE)) {
+
+			easeTimer = 0;
 			objNum = 1;
+		}
 		break;
+
 	case 1:
-		viewProjection.target = {
-		  worldTransform[1].translation_.x, worldTransform[1].translation_.y,
-		  worldTransform[1].translation_.z};
-		if (input_->TriggerKey(DIK_SPACE))
+		if (easeTimer <= 60)
+			easeTimer++;
+
+		viewTargetPos.x = easeing.Out(
+		  easeTimer, 60, worldTransform[0].translation_.x, worldTransform[1].translation_.x, 5);
+
+		viewTargetPos.y = easeing.Out(
+		  easeTimer, 60, worldTransform[0].translation_.y, worldTransform[1].translation_.y, 5);
+
+		if (input_->TriggerKey(DIK_SPACE)) {
+
+			easeTimer = 0;
 			objNum = 2;
+		}
 		break;
+
 	case 2:
-		viewProjection.target = {
-		  worldTransform[2].translation_.x, worldTransform[2].translation_.y,
-		  worldTransform[2].translation_.z};
-		if (input_->TriggerKey(DIK_SPACE))
+		if (easeTimer <= 60)
+			easeTimer++;
+
+		viewTargetPos.x = easeing.Out(
+		  easeTimer, 60, worldTransform[1].translation_.x, worldTransform[2].translation_.x, 5);
+
+		viewTargetPos.y = easeing.Out(
+		  easeTimer, 60, worldTransform[1].translation_.y, worldTransform[2].translation_.y, 5);
+
+		if (input_->TriggerKey(DIK_SPACE)) {
+
+			easeTimer = 0;
 			objNum = 0;
+		}
 		break;
 	default:
 		break;
 	}
 
+	viewProjection.target = {viewTargetPos.x, viewTargetPos.y, viewTargetPos.z};
 	viewProjection.UpdateMatrix();
 
 	// デバッグ用表示

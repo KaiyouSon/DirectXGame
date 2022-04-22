@@ -61,7 +61,11 @@ class GameScene {
 	// ビュープロジェクション
 	ViewProjection viewProjection;
 
-	Vec3 viewPos = {0.0f, 0.0f, -25.0f};
+	Vec3 viewTargetPos = {0.0f, 0.0f, 0.0f};
 
 	int objNum = 0;
+
+	bool isEase = false;
+	double easeTimer=60;
+	Vec3 startPos;
 };
