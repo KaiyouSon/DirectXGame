@@ -1,5 +1,6 @@
 ﻿#include "GameScene.h"
 #include "TextureManager.h"
+#include "Vec3.h"
 #include <cassert>
 #include <random>
 
@@ -7,10 +8,12 @@ using namespace DirectX;
 
 GameScene::GameScene() {}
 
-GameScene::~GameScene() { delete model; }
+GameScene::~GameScene() {
+	delete model;
+	delete reticleSprete;
+}
 
 void GameScene::Initialize() {
-
 
 	dxCommon_ = DirectXCommon::GetInstance();
 	input_ = Input::GetInstance();
@@ -19,6 +22,8 @@ void GameScene::Initialize() {
 
 	textureHandle = TextureManager::Load("mario.jpg");
 	model = Model::Create();
+	reticle = TextureManager::Load("reticle.png");
+	reticleSprete = Sprite::Create(reticle, {0, 0});
 
 	// 乱数シード生成器
 	std::random_device seed_gen;
@@ -36,6 +41,7 @@ void GameScene::Initialize() {
 
 		// X, Y, Z 軸周りの回転角を設定
 		worldTransform[i].rotation_ = {rotDist(engine), rotDist(engine), rotDist(engine)};
+
 		// X, Y, Z 方向のスケーリングを設定
 		worldTransform[i].scale_ = {1.0f, 1.0f, 1.0f};
 
@@ -43,17 +49,12 @@ void GameScene::Initialize() {
 		worldTransform[i].Initialize();
 	}
 
-	viewProjection.eye = {0, 0, -50};
+	viewProjection.eye = {0, 0, 50};
 	viewProjection.target = {0, 0, 0};
 	viewProjection.up = {0, 1, 0};
 
 	// カメラ垂直方向視野角を設定
-	viewProjection.fovAngleY = XMConvertToRadians(45);
-
-	// ニアクリップ距離
-	viewProjection.nearZ = 52.0f;
-	// ファークリップ距離
-	viewProjection.farZ = 53.0f;
+	viewProjection.fovAngleY = XMConvertToRadians(40);
 
 	// ビュープロジェクションの初期化
 	viewProjection.Initialize();
@@ -61,81 +62,44 @@ void GameScene::Initialize() {
 
 void GameScene::Update() {
 
-	// 視点移動処理
-	// 視点の移動ベクトル
-	// XMFLOAT3 move = {0, 0, 0};
-
-	//// 視点の移動の速さ
-	// const float kEyeSpeed = 0.2f;
-
-	// if (input_->PushKey(DIK_W)) {
-	//	move = {0, 0, kEyeSpeed};
-	// } else if (input_->PushKey(DIK_S)) {
-	//	move = {0, 0, -kEyeSpeed};
-	// }
-
-	//// 視点移動（ベクトルの加算）
-	// viewProjection.eye.x += move.x;
-	// viewProjection.eye.y += move.y;
-	// viewProjection.eye.z += move.z;
-
 	// FoVの変更処理
-	// 上キーで視野角が広がる
-	if (input_->PushKey(DIK_W)) {
-		viewProjection.fovAngleY += 0.01f;
-		viewProjection.fovAngleY = min(viewProjection.fovAngleY, XM_PI);
-	}
-	// 上キーで視野角が狭まる
-	else if (input_->PushKey(DIK_S)) {
-		viewProjection.fovAngleY -= 0.01f;
-		viewProjection.fovAngleY = max(viewProjection.fovAngleY, 0.01f);
+	if (input_->TriggerKey(DIK_SPACE)) {
+		if (isExpansion == true)
+			isExpansion = false;
+		else if (isExpansion == false)
+			isExpansion = true;
 	}
 
-	// クリップ変更処理
-	// 上キーでニアクリップ距離を増減
+	if (isExpansion == true) {
+		viewProjection.fovAngleY = XMConvertToRadians(20);
+	}
+	if (isExpansion == false) {
+		viewProjection.fovAngleY = XMConvertToRadians(40);
+	}
+
+	// 注視点の移動処理
+	const float viewMoveSpd = 0.2f;
+
 	if (input_->PushKey(DIK_UP)) {
-		viewProjection.nearZ += 0.1f;
-	} else if (input_->PushKey(DIK_DOWN)) {
-		viewProjection.nearZ -= 0.1f;
+		viewProjection.target.y += viewMoveSpd;
 	}
-
-	// アスペクト比を設定
-	// viewProjection.aspectRatio = 1.0f;
-
-	//// 注視点の移動処理
-	//// 注視点の移動ベクトル
-	// XMFLOAT3 viewTargerMove = {0, 0, 0};
-
-	//// 注視点の移動の速さ
-	// const float viewTargerSpeed = 0.2f;
-
-	// if (input_->PushKey(DIK_RIGHT)) {
-	//	viewTargerMove = {viewTargerSpeed, 0, 0};
-	// } else if (input_->PushKey(DIK_LEFT)) {
-	//	viewTargerMove = {-viewTargerSpeed, 0, 0};
-	// }
-
-	//// 注視点移動（ベクトルの加算）
-	// viewProjection.target.x += viewTargerMove.x;
-	// viewProjection.target.y += viewTargerMove.y;
-	// viewProjection.target.z += viewTargerMove.z;
-
-	//// 上方向回転処理
-	//// 上方向の回転速さ［ラジアン/frame］
-	// const float kUpRotSpeed = 0.05f;
-
-	//// 押した方向で移動ベクトル変更
-	// if (input_->PushKey(DIK_SPACE)) {
-	//	viewAngle += kUpRotSpeed;
-	//	// 2πを超えたら0に戻す
-	//	viewAngle = fmodf(viewAngle, XM_2PI);
-	// }
-
-	//// 上方向ベクトルを計算（半径１の円周上の座標）
-	// viewProjection.up = {cosf(viewAngle), sinf(viewAngle), 0.0f};
+	if (input_->PushKey(DIK_DOWN)) {
+		viewProjection.target.y -= viewMoveSpd;
+	}
+	if (input_->PushKey(DIK_LEFT)) {
+		viewProjection.target.x += viewMoveSpd;
+	}
+	if (input_->PushKey(DIK_RIGHT)) {
+		viewProjection.target.x -= viewMoveSpd;
+	}
 
 	// 行列の再計算
 	viewProjection.UpdateMatrix();
+
+	Vec3 reticlePos(640, 360, 0);
+	int reticleSize = 64;
+
+	reticleSprete->SetPosition(XMFLOAT2(reticlePos.x - reticleSize, reticlePos.y - reticleSize));
 
 	// デバッグ用表示
 	debugText_->SetPos(50, 50);
@@ -197,6 +161,9 @@ void GameScene::Draw() {
 	/// </summary>
 
 	// デバッグテキストの描画
+	if (isExpansion == true)
+		reticleSprete->Draw();
+
 	debugText_->DrawAll(commandList);
 	//
 	// スプライト描画後処理

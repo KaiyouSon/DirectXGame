@@ -51,7 +51,6 @@ class GameScene {
 	/// <summary>
 	/// ゲームシーン用
 	/// </summary>
-
 	uint32_t textureHandle = 0;
 	Model* model = nullptr;
 
@@ -59,4 +58,8 @@ class GameScene {
 	WorldTransform worldTransform[100];
 	// ビュープロジェクション
 	ViewProjection viewProjection;
+
+	uint32_t reticle = 0;
+	Sprite* reticleSprete = nullptr;
+	bool isExpansion = false;
 };
