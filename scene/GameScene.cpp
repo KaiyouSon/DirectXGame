@@ -33,8 +33,6 @@ void GameScene::Update() {
 	Vec3 moveVec(0, 0, 0);
 	float spd = 0.2f;
 
-	float moveAngle = 0.05;
-
 	if (input_->PushKey(DIK_LEFT)) {
 		moveVec.x = -spd;
 	}
@@ -43,15 +41,25 @@ void GameScene::Update() {
 	}
 	worldTransform[PartID::Root].translation_.x += moveVec.x;
 
-	worldTransform[PartID::ArmL].rotation_.x += moveAngle * 2;
-	worldTransform[PartID::ArmR].rotation_.x -= moveAngle * 2;
-	worldTransform[PartID::LegL].rotation_.x -= moveAngle * 2;
-	worldTransform[PartID::LegR].rotation_.x += moveAngle * 2;
+	worldTransform[PartID::ArmL].rotation_.x += moveAngle2;
+	worldTransform[PartID::ArmR].rotation_.x -= moveAngle2;
+	worldTransform[PartID::LegL].rotation_.x -= moveAngle2;
+	worldTransform[PartID::LegR].rotation_.x += moveAngle2;
 
 	if (input_->PushKey(DIK_D))
 		worldTransform[PartID::Root].rotation_.y += moveAngle;
 	if (input_->PushKey(DIK_A))
 		worldTransform[PartID::Root].rotation_.y -= moveAngle;
+
+	if (worldTransform[PartID::ArmL].rotation_.x >= XMConvertToRadians(45))
+		isChangeRotation = true;
+	if (worldTransform[PartID::ArmL].rotation_.x <= XMConvertToRadians(-45))
+		isChangeRotation = false;
+
+	if (isChangeRotation == true)
+		moveAngle2 = -0.05;
+	if (isChangeRotation == false)
+		moveAngle2 = 0.05;
 
 	for (size_t i = 0; i < _countof(worldTransform); i++) {
 

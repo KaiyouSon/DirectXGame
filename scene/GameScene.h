@@ -61,18 +61,22 @@ class GameScene {
 	// ビュープロジェクション
 	ViewProjection viewProjection;
 
+	float moveAngle = 0.05;
+	float moveAngle2 = 0.05;
+	bool isChangeRotation = false;
+
   public:
 	enum PartID {
-		Root, // 大元
+		Root,      // 大元
 		UpperBody, // 上半身
-		Head, // 頭
-		Chest,// 胸
-		ArmL, // 左腕
-		ArmR, // 右腕
+		Head,      // 頭
+		Chest,     // 胸
+		ArmL,      // 左腕
+		ArmR,      // 右腕
 		LowerBody, // 下半身
-		Hip,  // 尻
-		LegL, // 左足
-		LegR, // 右足
+		Hip,       // 尻
+		LegL,      // 左足
+		LegR,      // 右足
 	};
 
   private:
