@@ -21,7 +21,7 @@ void GameScene::Initialize() {
 
 	CharcterInit();
 
-	viewProjection.eye = {0.0f, 5.0f, -50.0f};
+	viewProjection.eye = {0.0f, 3.0f, -30.0f};
 	viewProjection.target = {0.0f, 0.0f, 0.0f};
 	viewProjection.up = {0.0f, 1.0f, 0.0f};
 	viewProjection.fovAngleY = XMConvertToRadians(45);
@@ -41,20 +41,17 @@ void GameScene::Update() {
 	if (input_->PushKey(DIK_RIGHT)) {
 		moveVec.x = spd;
 	}
-	if (input_->PushKey(DIK_U)) {
-		worldTransform[PartID::UpperBody].rotation_.y -= moveAngle;
-	}
-	if (input_->PushKey(DIK_I)) {
-		worldTransform[PartID::UpperBody].rotation_.y += moveAngle;
-	}
-	if (input_->PushKey(DIK_J)) {
-		worldTransform[PartID::LowerBody].rotation_.y -= moveAngle;
-	}
-	if (input_->PushKey(DIK_K)) {
-		worldTransform[PartID::LowerBody].rotation_.y += moveAngle;
-	}
-
 	worldTransform[PartID::Root].translation_.x += moveVec.x;
+
+	worldTransform[PartID::ArmL].rotation_.x += moveAngle * 2;
+	worldTransform[PartID::ArmR].rotation_.x -= moveAngle * 2;
+	worldTransform[PartID::LegL].rotation_.x -= moveAngle * 2;
+	worldTransform[PartID::LegR].rotation_.x += moveAngle * 2;
+
+	if (input_->PushKey(DIK_D))
+		worldTransform[PartID::Root].rotation_.y += moveAngle;
+	if (input_->PushKey(DIK_A))
+		worldTransform[PartID::Root].rotation_.y -= moveAngle;
 
 	for (size_t i = 0; i < _countof(worldTransform); i++) {
 
@@ -72,7 +69,7 @@ void GameScene::Update() {
 
 	debugText_->SetPos(50, 90);
 	debugText_->Printf(
-	  "target:(%f,%f,%f)", viewProjection.up.x, viewProjection.up.y, viewProjection.up.z);
+	  "up:(%f,%f,%f)", viewProjection.up.x, viewProjection.up.y, viewProjection.up.z);
 
 	debugText_->SetPos(50, 110);
 	debugText_->Printf("fovAngleY(Degree):%f", XMConvertToDegrees(viewProjection.fovAngleY));
@@ -140,7 +137,7 @@ void GameScene::CharcterInit() {
 
 	// 大元の初期化
 	worldTransform[PartID::Root].translation_ = {0.0f, 0.0f, 0.0f};
-	worldTransform[PartID::Root].rotation_ = {0.0f, 0.0f, 0.0f};
+	worldTransform[PartID::Root].rotation_ = {0.0f, XMConvertToRadians(30), 0.0f};
 	worldTransform[PartID::Root].scale_ = {1.0f, 1.0f, 1.0f};
 	worldTransform[PartID::Root].Initialize();
 
