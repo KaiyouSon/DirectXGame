@@ -54,7 +54,7 @@ void GameScene::Initialize() {
 	viewProjection.up = {0, 1, 0};
 
 	// カメラ垂直方向視野角を設定
-	viewProjection.fovAngleY = XMConvertToRadians(40);
+	viewProjection.fovAngleY = XMConvertToRadians(addViewFovAngleY);
 
 	// ビュープロジェクションの初期化
 	viewProjection.Initialize();
@@ -63,19 +63,20 @@ void GameScene::Initialize() {
 void GameScene::Update() {
 
 	// FoVの変更処理
-	if (input_->TriggerKey(DIK_SPACE)) {
-		if (isExpansion == true)
-			isExpansion = false;
-		else if (isExpansion == false)
-			isExpansion = true;
-	}
+	if (input_->PushKey(DIK_SPACE))
+		isExpansion = true;
+	else
+		isExpansion = false;
 
 	if (isExpansion == true) {
-		viewProjection.fovAngleY = XMConvertToRadians(20);
+		if (addViewFovAngleY > 20)
+			addViewFovAngleY -= 2;
+	} else {
+		if (addViewFovAngleY < 40)
+			addViewFovAngleY += 2;
 	}
-	if (isExpansion == false) {
-		viewProjection.fovAngleY = XMConvertToRadians(40);
-	}
+
+	viewProjection.fovAngleY = XMConvertToRadians(addViewFovAngleY);
 
 	// 注視点の移動処理
 	const float viewMoveSpd = 0.2f;

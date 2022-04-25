@@ -62,4 +62,6 @@ class GameScene {
 	uint32_t reticle = 0;
 	Sprite* reticleSprete = nullptr;
 	bool isExpansion = false;
+
+	float addViewFovAngleY = 40;
 };
