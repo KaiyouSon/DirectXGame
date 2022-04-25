@@ -10,7 +10,8 @@ GameScene::GameScene() {}
 
 GameScene::~GameScene() {
 	delete model;
-	delete reticleSprete;
+	delete reticleSprite;
+	delete scopeSprite;
 }
 
 void GameScene::Initialize() {
@@ -23,7 +24,9 @@ void GameScene::Initialize() {
 	textureHandle = TextureManager::Load("mario.jpg");
 	model = Model::Create();
 	reticle = TextureManager::Load("reticle.png");
-	reticleSprete = Sprite::Create(reticle, {0, 0});
+	reticleSprite = Sprite::Create(reticle, {0, 0});
+	scope = TextureManager::Load("scope.png");
+	scopeSprite = Sprite::Create(scope, {0, 0});
 
 	// 乱数シード生成器
 	std::random_device seed_gen;
@@ -63,17 +66,34 @@ void GameScene::Initialize() {
 void GameScene::Update() {
 
 	// FoVの変更処理
-	if (input_->PushKey(DIK_SPACE))
-		isExpansion = true;
-	else
-		isExpansion = false;
+	if (input_->TriggerKey(DIK_SPACE)) {
+		if (isExpansion == true)
+			isExpansion = false;
+		else
+			isExpansion = true;
+	}
 
 	if (isExpansion == true) {
-		if (addViewFovAngleY > 20)
-			addViewFovAngleY -= 2;
+
+		if (input_->TriggerKey(DIK_W)) {
+			isChangeRate = true;
+		} else if (input_->TriggerKey(DIK_S)) {
+			isChangeRate = false;
+		}
+
+		if (isChangeRate == true) {
+			if (addViewFovAngleY > 17)
+				addViewFovAngleY -= 2;
+		} else {
+			if (addViewFovAngleY < 34)
+				addViewFovAngleY += 2;
+			else
+				addViewFovAngleY = 34;
+		}
+
 	} else {
-		if (addViewFovAngleY < 40)
-			addViewFovAngleY += 2;
+
+		addViewFovAngleY = 90;
 	}
 
 	viewProjection.fovAngleY = XMConvertToRadians(addViewFovAngleY);
@@ -97,10 +117,14 @@ void GameScene::Update() {
 	// 行列の再計算
 	viewProjection.UpdateMatrix();
 
-	Vec3 reticlePos(640, 360, 0);
+	Vec3 WinSize(1280, 720, 0);
+	Vec3 reticlePos(WinSize.x / 2, WinSize.y / 2, 0);
 	int reticleSize = 64;
+	Vec3 scopePos(WinSize.x / 2, WinSize.y / 2, 0);
+	Vec3 scopeSize(640, 360, 0);
 
-	reticleSprete->SetPosition(XMFLOAT2(reticlePos.x - reticleSize, reticlePos.y - reticleSize));
+	reticleSprite->SetPosition({reticlePos.x - reticleSize, reticlePos.y - reticleSize});
+	scopeSprite->SetPosition({scopePos.x - scopeSize.x, scopePos.y - scopeSize.y});
 
 	// デバッグ用表示
 	debugText_->SetPos(50, 50);
@@ -117,6 +141,16 @@ void GameScene::Update() {
 	debugText_->Printf("fovAngleY(Degree):%f", XMConvertToDegrees(viewProjection.fovAngleY));
 	debugText_->SetPos(50, 130);
 	debugText_->Printf("nearZ:%f", viewProjection.nearZ);
+
+	if (isExpansion == true) {
+		if (isChangeRate == true) {
+			debugText_->SetPos(1000, 90);
+			debugText_->Printf("x8");
+		} else {
+			debugText_->SetPos(1000, 90);
+			debugText_->Printf("x4");
+		}
+	}
 }
 
 void GameScene::Draw() {
@@ -162,8 +196,10 @@ void GameScene::Draw() {
 	/// </summary>
 
 	// デバッグテキストの描画
-	if (isExpansion == true)
-		reticleSprete->Draw();
+	if (isExpansion == true) {
+		reticleSprite->Draw();
+		scopeSprite->Draw();
+	}
 
 	debugText_->DrawAll(commandList);
 	//

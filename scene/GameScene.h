@@ -60,8 +60,11 @@ class GameScene {
 	ViewProjection viewProjection;
 
 	uint32_t reticle = 0;
-	Sprite* reticleSprete = nullptr;
+	Sprite* reticleSprite = nullptr;
+	uint32_t scope = 0;
+	Sprite* scopeSprite = nullptr;
 	bool isExpansion = false;
+	bool isChangeRate = false;
 
-	float addViewFovAngleY = 40;
+	float addViewFovAngleY = 90;
 };
