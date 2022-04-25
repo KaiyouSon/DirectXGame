@@ -57,13 +57,25 @@ class GameScene {
 	Model* model = nullptr;
 
 	// ワールドトランスフォーム
-	WorldTransform worldTransform;
-	WorldTransform worldTransform2[10];
+	WorldTransform worldTransform[10];
 	// ビュープロジェクション
 	ViewProjection viewProjection;
 
-	Vec3 objPos;
-	Vec3 objSpeed;
-	Vec3 objVec;
-	float angle;
+  public:
+	enum PartID {
+		Root, // 大元
+		UpperBody, // 上半身
+		Head, // 頭
+		Chest,// 胸
+		ArmL, // 左腕
+		ArmR, // 右腕
+		LowerBody, // 下半身
+		Hip,  // 尻
+		LegL, // 左足
+		LegR, // 右足
+	};
+
+  private:
+	void CharcterInit();
+	void CharcterDraw();
 };
