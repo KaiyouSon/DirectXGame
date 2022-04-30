@@ -33,6 +33,7 @@ void GameScene::Update() {
 	void (GameScene::*Functbl[])() = {
 	  &GameScene::IdleUpdate,
 	  &GameScene::RunUpdate,
+	  &GameScene::JumpUpdate,
 	};
 
 	(this->*Functbl[state])();
@@ -252,6 +253,11 @@ void GameScene::IdleUpdate() {
 
 	if (input_->PushKey(DIK_W))
 		state = Run;
+
+	if (input_->TriggerKey(DIK_SPACE) == true) {
+		gravity = 1;
+		state = Jump;
+	}
 }
 
 void GameScene::RunUpdate() {
@@ -265,8 +271,28 @@ void GameScene::RunUpdate() {
 	if (isChangeRotation == false)
 		moveAngle2 -= angle2Spd;
 
+	if (input_->PushKey(DIK_LSHIFT))
+		angle2Spd = 6;
+	else
+		angle2Spd = 3;
+
 	if (input_->PushKey(DIK_W) == false)
 		state = Idle;
+
+	if (input_->TriggerKey(DIK_SPACE) == true) {
+		gravity = 1;
+		state = Jump;
+	}
+}
+
+void GameScene::JumpUpdate() {
+	gravity -= 0.05;
+
+	if (worldTransform[PartID::Root].translation_.y < 0) {
+		worldTransform[PartID::Root].translation_.y = 0;
+		gravity = 0;
+		state = Idle;
+	}
 }
 
 void GameScene::OtherStatusUpdate() {
@@ -285,4 +311,10 @@ void GameScene::OtherStatusUpdate() {
 	worldTransform[PartID::ArmR].rotation_.x = -XMConvertToRadians(moveAngle2);
 	worldTransform[PartID::LegL].rotation_.x = -XMConvertToRadians(moveAngle2);
 	worldTransform[PartID::LegR].rotation_.x = +XMConvertToRadians(moveAngle2);
+
+	worldTransform[PartID::Root].translation_.y += gravity;
+	if (gravity <= -5) {
+
+		gravity = -5;
+	}
 }

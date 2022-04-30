@@ -66,6 +66,7 @@ class GameScene {
 	bool isChangeRotation = false;
 	bool isGreaterThanZeroAngle = false;
 	int state = 0;
+	float gravity = 0;
 	float angleSpd = 0.2f;
 	int angle2Spd = 3;
 
@@ -90,6 +91,7 @@ class GameScene {
 	enum State {
 		Idle,
 		Run,
+		Jump,
 	};
 
   private:
@@ -100,5 +102,6 @@ class GameScene {
 
 	void IdleUpdate();
 	void RunUpdate();
+	void JumpUpdate();
 	void OtherStatusUpdate();
 };
