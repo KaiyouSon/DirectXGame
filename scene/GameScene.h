@@ -57,13 +57,17 @@ class GameScene {
 	Model* model = nullptr;
 
 	// ワールドトランスフォーム
-	WorldTransform worldTransform[10];
+	WorldTransform worldTransform[14];
 	// ビュープロジェクション
 	ViewProjection viewProjection;
 
 	float moveAngle = 0.05;
-	float moveAngle2 = 0.05;
+	float moveAngle2 = 0;
 	bool isChangeRotation = false;
+	bool isGreaterThanZeroAngle = false;
+	int state = 0;
+	float angleSpd = 0.2f;
+	int angle2Spd = 3;
 
   public:
 	enum PartID {
@@ -73,13 +77,28 @@ class GameScene {
 		Chest,     // 胸
 		ArmL,      // 左腕
 		ArmR,      // 右腕
+		HandL,     // 左手
+		HandR,     // 右手
 		LowerBody, // 下半身
 		Hip,       // 尻
 		LegL,      // 左足
 		LegR,      // 右足
+		FootL,     // 左足元
+		FootR,     // 右足元
+	};
+
+	enum State {
+		Idle,
+		Run,
 	};
 
   private:
 	void CharcterInit();
 	void CharcterDraw();
+
+	bool CheckmoveAngle2();
+
+	void IdleUpdate();
+	void RunUpdate();
+	void OtherStatusUpdate();
 };

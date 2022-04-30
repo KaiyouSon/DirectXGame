@@ -30,42 +30,18 @@ void GameScene::Initialize() {
 
 void GameScene::Update() {
 
-	Vec3 moveVec(0, 0, 0);
-	float spd = 0.2f;
+	void (GameScene::*Functbl[])() = {
+	  &GameScene::IdleUpdate,
+	  &GameScene::RunUpdate,
+	};
 
-	if (input_->PushKey(DIK_LEFT)) {
-		moveVec.x = -spd;
-	}
-	if (input_->PushKey(DIK_RIGHT)) {
-		moveVec.x = spd;
-	}
-	worldTransform[PartID::Root].translation_.x += moveVec.x;
-
-	worldTransform[PartID::ArmL].rotation_.x += moveAngle2;
-	worldTransform[PartID::ArmR].rotation_.x -= moveAngle2;
-	worldTransform[PartID::LegL].rotation_.x -= moveAngle2;
-	worldTransform[PartID::LegR].rotation_.x += moveAngle2;
-
-	if (input_->PushKey(DIK_D))
-		worldTransform[PartID::Root].rotation_.y += moveAngle;
-	if (input_->PushKey(DIK_A))
-		worldTransform[PartID::Root].rotation_.y -= moveAngle;
-
-	if (worldTransform[PartID::ArmL].rotation_.x >= XMConvertToRadians(45))
-		isChangeRotation = true;
-	if (worldTransform[PartID::ArmL].rotation_.x <= XMConvertToRadians(-45))
-		isChangeRotation = false;
-
-	if (isChangeRotation == true)
-		moveAngle2 = -0.05;
-	if (isChangeRotation == false)
-		moveAngle2 = 0.05;
+	(this->*Functbl[state])();
+	OtherStatusUpdate();
 
 	for (size_t i = 0; i < _countof(worldTransform); i++) {
 
 		worldTransform[i].UpdateMatrix();
 	}
-
 	debugText_->SetPos(50, 50);
 	debugText_->Printf(
 	  "eye:(%f,%f,%f)", viewProjection.eye.x, viewProjection.eye.y, viewProjection.eye.z);
@@ -184,6 +160,20 @@ void GameScene::CharcterInit() {
 	worldTransform[PartID::ArmR].scale_ = {1.0f, 1.0f, 1.0f};
 	worldTransform[PartID::ArmR].Initialize();
 
+	// 左手の初期化
+	worldTransform[PartID::HandL].parent_ = &worldTransform[PartID::ArmL];
+	worldTransform[PartID::HandL].translation_ = {0.0f, -2.0f, 0.0f};
+	worldTransform[PartID::HandL].rotation_ = {0.0f, 0.0f, 0.0f};
+	worldTransform[PartID::HandL].scale_ = {1.0f, 1.0f, 1.0f};
+	worldTransform[PartID::HandL].Initialize();
+
+	// 右手の初期化
+	worldTransform[PartID::HandR].parent_ = &worldTransform[PartID::ArmR];
+	worldTransform[PartID::HandR].translation_ = {0.0f, -2.0f, 0.0f};
+	worldTransform[PartID::HandR].rotation_ = {0.0f, 0.0f, 0.0f};
+	worldTransform[PartID::HandR].scale_ = {1.0f, 1.0f, 1.0f};
+	worldTransform[PartID::HandR].Initialize();
+
 	// 下半身の初期化
 	worldTransform[PartID::LowerBody].parent_ = &worldTransform[PartID::Root];
 	worldTransform[PartID::LowerBody].translation_ = {0.0f, -2.5f, 0.0f};
@@ -211,6 +201,20 @@ void GameScene::CharcterInit() {
 	worldTransform[PartID::LegR].rotation_ = {0.0f, 0.0f, 0.0f};
 	worldTransform[PartID::LegR].scale_ = {1.0f, 1.0f, 1.0f};
 	worldTransform[PartID::LegR].Initialize();
+
+	// 左足元の初期化
+	worldTransform[PartID::FootL].parent_ = &worldTransform[PartID::LegL];
+	worldTransform[PartID::FootL].translation_ = {0.0f, -2.0f, 0.0f};
+	worldTransform[PartID::FootL].rotation_ = {0.0f, 0.0f, 0.0f};
+	worldTransform[PartID::FootL].scale_ = {1.0f, 1.0f, 1.0f};
+	worldTransform[PartID::FootL].Initialize();
+
+	// 右足元の初期化
+	worldTransform[PartID::FootR].parent_ = &worldTransform[PartID::LegR];
+	worldTransform[PartID::FootR].translation_ = {0.0f, -2.0f, 0.0f};
+	worldTransform[PartID::FootR].rotation_ = {0.0f, 0.0f, 0.0f};
+	worldTransform[PartID::FootR].scale_ = {1.0f, 1.0f, 1.0f};
+	worldTransform[PartID::FootR].Initialize();
 }
 
 void GameScene::CharcterDraw() {
@@ -218,7 +222,67 @@ void GameScene::CharcterDraw() {
 	model->Draw(worldTransform[PartID::Chest], viewProjection, textureHandle);
 	model->Draw(worldTransform[PartID::ArmL], viewProjection, textureHandle);
 	model->Draw(worldTransform[PartID::ArmR], viewProjection, textureHandle);
+	model->Draw(worldTransform[PartID::HandL], viewProjection, textureHandle);
+	model->Draw(worldTransform[PartID::HandR], viewProjection, textureHandle);
 	model->Draw(worldTransform[PartID::Hip], viewProjection, textureHandle);
 	model->Draw(worldTransform[PartID::LegL], viewProjection, textureHandle);
 	model->Draw(worldTransform[PartID::LegR], viewProjection, textureHandle);
+	model->Draw(worldTransform[PartID::FootL], viewProjection, textureHandle);
+	model->Draw(worldTransform[PartID::FootR], viewProjection, textureHandle);
+}
+
+bool GameScene::CheckmoveAngle2() {
+	if (moveAngle2 > 0)
+		return true;
+	if (moveAngle2 < 0)
+		return false;
+}
+
+void GameScene::IdleUpdate() {
+	if (CheckmoveAngle2() == true) {
+		moveAngle2 -= angle2Spd;
+		if (moveAngle2 <= 0)
+			moveAngle2 = 0;
+	}
+	if (CheckmoveAngle2() == false) {
+		moveAngle2 += angle2Spd;
+		if (moveAngle2 >= 0)
+			moveAngle2 = 0;
+	}
+
+	if (input_->PushKey(DIK_W))
+		state = Run;
+}
+
+void GameScene::RunUpdate() {
+	if (moveAngle2 <= -45)
+		isChangeRotation = true;
+	if (moveAngle2 >= 45)
+		isChangeRotation = false;
+
+	if (isChangeRotation == true)
+		moveAngle2 += angle2Spd;
+	if (isChangeRotation == false)
+		moveAngle2 -= angle2Spd;
+
+	if (input_->PushKey(DIK_W) == false)
+		state = Idle;
+}
+
+void GameScene::OtherStatusUpdate() {
+
+	if (input_->PushKey(DIK_LEFT))
+		worldTransform[PartID::Root].translation_.x += angleSpd;
+	if (input_->PushKey(DIK_RIGHT))
+		worldTransform[PartID::Root].translation_.x -= angleSpd;
+
+	if (input_->PushKey(DIK_D))
+		worldTransform[PartID::Root].rotation_.y += moveAngle;
+	if (input_->PushKey(DIK_A))
+		worldTransform[PartID::Root].rotation_.y -= moveAngle;
+
+	worldTransform[PartID::ArmL].rotation_.x = +XMConvertToRadians(moveAngle2);
+	worldTransform[PartID::ArmR].rotation_.x = -XMConvertToRadians(moveAngle2);
+	worldTransform[PartID::LegL].rotation_.x = -XMConvertToRadians(moveAngle2);
+	worldTransform[PartID::LegR].rotation_.x = +XMConvertToRadians(moveAngle2);
 }
