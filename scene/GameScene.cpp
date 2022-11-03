@@ -21,7 +21,7 @@ void GameScene::Initialize() {
 
 	CharcterInit();
 
-	viewProjection.eye = {0.0f, 3.0f, -30.0f};
+	viewProjection.eye = {0.0f, 0.0f, -30.0f};
 	viewProjection.target = {0.0f, 0.0f, 0.0f};
 	viewProjection.up = {0.0f, 1.0f, 0.0f};
 	viewProjection.fovAngleY = XMConvertToRadians(45);
@@ -66,6 +66,12 @@ void GameScene::Update() {
 	debugText_->Printf(
 	  "Root:(%f,%f,%f)", worldTransform[PartID::Root].translation_.x,
 	  worldTransform[PartID::Root].translation_.y, worldTransform[PartID::Root].translation_.z);
+
+	debugText_->SetPos(50, 200);
+	debugText_->Printf("Pos:%f,%f", input_->GetMousePosition().x, input_->GetMousePosition().y);
+
+	debugText_->SetPos(50, 220);
+	debugText_->Printf("Wheel:%d", input_->GetWheel());
 }
 
 void GameScene::Draw() {
